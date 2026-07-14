@@ -1,0 +1,19 @@
+{
+    "name": "restful-booker",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "auth": "k6 run tests/auth/auth.js",
+        "createBooking": "k6 run tests/bookings/createBooking.js",
+        "updateBooking": "k6 run tests/bookings/updateBooking.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "devDependencies": {
+        "@types/k6": "^2.0.0"
+    }
+}
