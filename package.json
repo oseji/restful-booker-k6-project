@@ -1,16 +1,19 @@
 {
     "name": "restful-booker",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
+    "description": "k6 API and performance test suite for the restful-booker demo API",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
         "auth": "k6 run tests/auth/auth.js",
         "createBooking": "k6 run tests/bookings/createBooking.js",
-        "updateBooking": "k6 run tests/bookings/updateBooking.js"
+        "bookingLifecycle": "k6 run tests/bookings/bookingLifecycle.js"
     },
-    "keywords": [],
-    "author": "",
+    "keywords": [
+        "k6",
+        "api-testing",
+        "performance-testing",
+        "load-testing"
+    ],
+    "author": "oseji",
     "license": "ISC",
     "type": "commonjs",
     "devDependencies": {
