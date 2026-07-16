@@ -5,7 +5,8 @@
     "scripts": {
         "auth": "k6 run tests/auth/auth.js",
         "createBooking": "k6 run tests/bookings/createBooking.js",
-        "bookingLifecycle": "k6 run tests/bookings/bookingLifecycle.js"
+        "bookingLifecycle": "k6 run tests/bookings/bookingLifecycle.js",
+        "runAll": "npm run auth && npm run createBooking && npm run bookingLifecycle"
     },
     "keywords": [
         "k6",

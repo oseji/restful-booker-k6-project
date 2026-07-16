@@ -38,7 +38,10 @@ npm install
 npm run auth              # Authentication flow only
 npm run createBooking     # Booking creation only
 npm run bookingLifecycle  # Full booking lifecycle under staged load
+npm run runAll            # All three, in order (~8 minutes)
 ```
+
+`runAll` runs the scripts one after another rather than in parallel — three concurrent k6 processes would triple the load on a shared demo instance and make every latency figure meaningless. It runs cheapest first and stops at the first failure: every test needs authentication, so if `auth` fails the other two are going to fail too, and there's nothing to learn from spending six more minutes proving it. The exit code is non-zero if any script fails.
 
 ### Configuration
 
