@@ -1,36 +1,28 @@
-import http from "k6/http";
 import { sleep, check } from "k6";
+import { getAuthResponse } from "../../utils/getAuthResponse.js";
 
 export const options = {
-    iterations: 10,
-};
-
-const credentials = {
-    username: "admin",
-    password: "password123",
-};
-
-const url = "https://restful-booker.herokuapp.com/auth";
-
-const payload = JSON.stringify(credentials);
-
-const params = {
-    headers: {
-        "Content-Type": "application/json",
+    thresholds: {
+        http_req_duration: ["p(95)<500"],
+        http_req_failed: ["rate<0.01"],
+        checks: ["rate>0.99"],
     },
+    stages: [
+        { duration: "30s", target: 5 }, // ramp up
+        { duration: "1m", target: 5 }, // steady state
+        { duration: "20s", target: 0 }, // ramp down
+    ],
 };
 
 export default function () {
-    const response = http.post(url, payload, params);
-    const authToken = response.json("token");
-    // console.log(response.body);
-    console.log(authToken);
+    const response = getAuthResponse();
 
-    check(response, { "status is 200": (r) => r.status === 200 });
     check(response, {
-        "auth token is not empty": () => authToken !== "",
-        "auth token is not null": () => authToken !== null,
-        "auth token is not undefined": () => authToken !== undefined,
+        "status is 200": (r) => r.status === 200,
+        "auth token was returned": (r) => {
+            const token = r.json("token");
+            return token != null && token !== "";
+        },
     });
 
     sleep(1);
