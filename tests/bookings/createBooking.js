@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { sleep, check } from "k6";
 import { authHeaders, BASE_HEADERS } from "../../utils/baseHeaders.js";
-import { getAuthResponse } from "../../utils/getAuthResponse.js";
+import { getAuthResponse, isValidToken } from "../../utils/getAuthResponse.js";
 import { buildBooking } from "../../utils/bookingData.js";
 import { BASE_URL } from "../../utils/config.js";
 
@@ -39,13 +39,36 @@ export default function () {
 
     // clean up due to restful-booker being a shared community instance, and a create only test would leave a booking behind per iteration.
     if (bookingId != null) {
-        const authToken = getAuthResponse().json("token");
+        const cleanupAuthResponse = getAuthResponse();
+        const authToken = cleanupAuthResponse.json("token");
 
-        if (authToken) {
-            http.del(`${BASE_URL}/booking/${bookingId}`, null, {
-                headers: authHeaders(authToken),
-                tags: { endpoint: "cleanup" },
-            });
+        check(
+            cleanupAuthResponse,
+            {
+                "cleanup got an auth token": (r) =>
+                    isValidToken(r.json("token")),
+            },
+            { endpoint: "cleanup" },
+        );
+
+        if (isValidToken(authToken)) {
+            const cleanupResponse = http.del(
+                `${BASE_URL}/booking/${bookingId}`,
+                null,
+                {
+                    headers: authHeaders(authToken),
+                    tags: { endpoint: "cleanup" },
+                },
+            );
+
+            check(
+                cleanupResponse,
+                {
+                    // restful-booker answers a successful delete with 201
+                    "cleanup deleted the booking": (r) => r.status === 201,
+                },
+                { endpoint: "cleanup" },
+            );
         }
     }
 

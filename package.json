@@ -16,7 +16,7 @@
     ],
     "author": "oseji",
     "license": "ISC",
-    "type": "commonjs",
+    "type": "module",
     "devDependencies": {
         "@types/k6": "^2.0.0"
     }

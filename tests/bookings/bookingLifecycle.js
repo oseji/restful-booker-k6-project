@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { sleep, check } from "k6";
 import { authHeaders, BASE_HEADERS } from "../../utils/baseHeaders.js";
-import { getAuthResponse } from "../../utils/getAuthResponse.js";
+import { getAuthResponse, isValidToken } from "../../utils/getAuthResponse.js";
 import { buildBooking } from "../../utils/bookingData.js";
 import { BASE_URL } from "../../utils/config.js";
 
@@ -45,13 +45,13 @@ export default function () {
         authResponse,
         {
             "auth status is 200": (r) => r.status === 200,
-            "auth token was returned": (r) => r.json("token") != null,
+            "auth token was returned": (r) => isValidToken(r.json("token")),
         },
         { endpoint: "auth" },
     );
 
-    if (!authToken) {
-        // nothing downwards can authenticate if auth token is'nt valid so exit rather than firing more requests that are guaranteed to 403.
+    if (!isValidToken(authToken)) {
+        // nothing downstream can authenticate if the auth token isn't valid, so exit rather than firing more requests that are guaranteed to 403. the check above fails on exactly the same condition, so a skipped iteration is always reported rather than silently passing.
         return;
     }
 

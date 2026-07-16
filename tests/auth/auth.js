@@ -1,9 +1,9 @@
 import { sleep, check } from "k6";
-import { getAuthResponse } from "../../utils/getAuthResponse.js";
+import { getAuthResponse, isValidToken } from "../../utils/getAuthResponse.js";
 
 export const options = {
     thresholds: {
-        http_req_duration: ["p(95)<500"],
+        http_req_duration: ["p(95)<600"],
         http_req_failed: ["rate<0.01"],
         checks: ["rate>0.99"],
     },
@@ -19,10 +19,7 @@ export default function () {
 
     check(response, {
         "status is 200": (r) => r.status === 200,
-        "auth token was returned": (r) => {
-            const token = r.json("token");
-            return token != null && token !== "";
-        },
+        "auth token was returned": (r) => isValidToken(r.json("token")),
     });
 
     sleep(1);

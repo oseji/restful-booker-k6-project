@@ -9,3 +9,6 @@ export const getAuthResponse = () =>
         headers: BASE_HEADERS,
         tags: { endpoint: "auth" },
     });
+
+// what counts as a usable token, defined once. the checks and the early-return guards both ask this, so they can't drift apart and disagree about whether a login worked. a failed login can still answer 200 with an empty token.
+export const isValidToken = (token) => token != null && token !== "";
